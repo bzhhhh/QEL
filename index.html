@@ -87,6 +87,24 @@
     }
     #score { color: var(--accent); font: bold clamp(3rem, 9vw, 4.7rem)/1.1 Georgia, serif; }
     .breakdown { display: flex; flex-wrap: wrap; gap: 5px 22px; padding: 0; margin: 12px 0 0; list-style: none; }
+    #answer-key { margin-top: 16px; }
+    #answer-key summary {
+      width: fit-content; min-height: 44px; padding: 8px 14px; border-radius: 7px;
+      background: var(--accent); color: #fff; font-weight: 650; cursor: pointer;
+    }
+    #answer-key summary:hover { background: #144a3b; }
+    #answer-key[open] summary { margin-bottom: 14px; }
+    #reference-answers {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px;
+    }
+    .answer-section {
+      padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--sheet); overflow-wrap: anywhere;
+    }
+    .answer-section h3 { margin: 0; font-size: 1rem; }
+    .answer-section ol { margin: 8px 0 0; padding-inline-start: 1.5em; }
+    .answer-section li + li { margin-top: 5px; }
+    .answer-note { color: var(--muted); font-size: .9rem; }
     .bottom-actions { display: flex; justify-content: flex-end; }
     dialog {
       width: min(440px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 12px;
@@ -125,6 +143,10 @@
       <h2 id="result-title">本次得分</h2>
       <p><strong id="score"></strong> / 100 分</p>
       <ul class="breakdown" id="breakdown"></ul>
+      <details id="answer-key">
+        <summary>查看参考答案</summary>
+        <div id="reference-answers"></div>
+      </details>
     </section>
     <div class="layout">
       <nav id="sections" aria-label="试卷题型"></nav>
@@ -178,9 +200,9 @@
     {"prompt": "“太子伴读”指两个队友坐太子旁边看他玩游戏。", "answer": "T", "note": ""}
   ]},
   {"id": "fill", "title": "三、填空题", "points": 2, "unit": "每空", "questions": [
-    {"parts": ["qel 竞走大赛：快人百步是", "；慢人十步是", "；快人一步是", "；快人两步是", "。"], "blanks": [["suk"], ["remember"], ["bxc"], ["ming"]]},
+    {"parts": ["qel 竞走大赛：快人百步是", "；慢人十步是", "；快人一步是", "；快人两步是", "。"], "blanks": [["suk"], ["remember"], ["bxc", "陈礼根", "白小纯", "小纯"], ["ming", "明哥", "mingskr"]]},
     {"parts": ["“太子登基”：训练赛day3 开场", "，太子专门做", "。"], "blanks": [["金色雨"], ["妆造"]]},
-    {"parts": ["“脚蹬子合成自行车”：太子嫔拿", "当脚蹬子，太子拿", "当脚蹬子，两个脚蹬子合成自行车开起来了。"], "blanks": [["33"], ["小纯"]]},
+    {"parts": ["“脚蹬子合成自行车”：太子嫔拿", "当脚蹬子，太子拿", "当脚蹬子，两个脚蹬子合成自行车开起来了。"], "blanks": [["33", "三三", "33svan", "钟鸿森", "oo3"], ["xc", "陈礼根", "白小纯", "小纯"]]},
     {"parts": ["“青青类包”：tb 那么捧太子，疑似因为ch 的白月光是", "，“他叫贝因斯坦而你又叫小", "”。"], "blanks": [["包贝尔"], ["爱因斯坦", "小爱因斯坦"]]},
     {"parts": ["“太子嫔”：丘丘投诚，但没", "正言顺，所以只能当嫔。"], "blanks": [["ming", "名"]]},
     {"parts": ["“绿毛鸡”：青＝绿毛，稚＝", "＝鸡，绿毛鸡有感觉吗。"], "blanks": [["雉"]]},
@@ -199,6 +221,8 @@
     const sectionLinks = document.querySelector('#sections');
     const result = document.querySelector('#result');
     const breakdown = document.querySelector('#breakdown');
+    const answerKey = document.querySelector('#answer-key');
+    const referenceAnswers = document.querySelector('#reference-answers');
     const progress = document.querySelector('#progress');
     const progressLabel = document.querySelector('#progress-label');
     const submitButton = document.querySelector('#submit');
@@ -300,6 +324,20 @@
       }
     }
 
+    function renderReferenceAnswers() {
+      referenceAnswers.replaceChildren(...sections.map(section => {
+        const panel = element('section', '', 'answer-section');
+        const list = document.createElement('ol');
+        for (const group of answerGroups.filter(group => group.section === section)) {
+          const answer = element('li', group.units.map(unit => unit.reference).join(' · '));
+          if (group.question.note) answer.append(element('p', group.question.note, 'answer-note'));
+          list.append(answer);
+        }
+        panel.append(element('h3', section.title), list);
+        return panel;
+      }));
+    }
+
     function finishAttempt(focusResult = true) {
       const answers = new FormData(exam);
       const totals = new Map(sections.map(section => [section.id, 0]));
@@ -326,6 +364,7 @@
       breakdown.replaceChildren(...sections.map(section =>
         element('li', `${section.title.split('、')[1]} ${totals.get(section.id)} / ${section.maxPoints} 分`)
       ));
+      renderReferenceAnswers();
       result.hidden = false;
       submitButton.hidden = true;
       bottomActions.hidden = true;
@@ -379,6 +418,7 @@
       updateProgress();
       saveAttempt();
       result.hidden = true;
+      answerKey.open = false;
       submitButton.hidden = false;
       bottomActions.hidden = false;
       resetButton.hidden = true;
