@@ -193,14 +193,14 @@
     {"prompt": "“孤寡老牛，冷宫疯牛，深山红牛，年后老牛”：三三远在另一个平台，顶着十秒延迟也要和他们连麦玩游戏，成功获得每一个惩罚。", "answer": "T", "note": ""},
     {"prompt": "“对面是职业不怪你们”：rsg 复盘直播，dmls 说出这句话，无痕诡秘当场结巴破防。", "answer": "T", "note": ""},
     {"prompt": "“e 国两蛭”：太子和太子嫔心结一样、为人处事也一样，会说“那和我有什么关系”“我又没叫人骂他”。", "answer": "T", "note": ""},
-    {"prompt": "“tec 魔仙堡”：三三小蓝图被pc 换成头像，从而导致qc 被弃养两次。", "answer": "T", "note": ""},
+    {"prompt": "“tec 魔仙堡”：三三小蓝图被qc 换成头像，从而导致qc 被弃养两次。", "answer": "T", "note": ""},
     {"prompt": "皇儿本来12:00 要下播，收留无家可归的lgn 后，直播间人数从7k 涨到7w。", "answer": "T", "note": ""},
     {"prompt": "“青丘糊传说”：这个梗说的是太子和皇儿正好和电视剧对上了名字。", "answer": "F", "note": "是太子和丘丘，不是太子和皇儿"},
     {"prompt": "“丘吉尔”是丘丘和太子青贝尔的CP 名，又称“铁幕演说之人”。", "answer": "T", "note": ""},
     {"prompt": "“太子伴读”指两个队友坐太子旁边看他玩游戏。", "answer": "T", "note": ""}
   ]},
   {"id": "fill", "title": "三、填空题", "points": 2, "unit": "每空", "questions": [
-    {"parts": ["qel 竞走大赛：快人百步是", "；慢人十步是", "；快人一步是", "；快人两步是", "。"], "blanks": [["suk"], ["remember"], ["bxc", "陈礼根", "白小纯", "小纯"], ["ming", "明哥", "mingskr"]]},
+    {"parts": ["qel 竞走大赛：慢人十步是", "；快人一步是", "；快人两步是", "；快人十步是", "。"], "blanks": [["remember"], ["bxc", "陈礼根", "白小纯", "小纯"], ["ming", "明哥", "mingskr"], ["诚c"]], "blankIds": [2, 3, 4, 5]},
     {"parts": ["“太子登基”：训练赛day3 开场", "，太子专门做", "。"], "blanks": [["金色雨"], ["妆造"]]},
     {"parts": ["“脚蹬子合成自行车”：太子嫔拿", "当脚蹬子，太子拿", "当脚蹬子，两个脚蹬子合成自行车开起来了。"], "blanks": [["33", "三三", "33svan", "钟鸿森", "oo3"], ["xc", "陈礼根", "白小纯", "小纯"]]},
     {"parts": ["“青青类包”：tb 那么捧太子，疑似因为ch 的白月光是", "，“他叫贝因斯坦而你又叫小", "”。"], "blanks": [["包贝尔"], ["爱因斯坦", "小爱因斯坦"]]},
@@ -268,7 +268,9 @@
           question.blanks.forEach((accepted, blankIndex) => {
             const input = document.createElement('input');
             input.type = 'text';
-            input.name = `${id}-${blankIndex + 1}`;
+            // Keep saved responses attached to their original prompts when blanks move.
+            const blankId = question.blankIds?.[blankIndex] ?? blankIndex + 1;
+            input.name = `${id}-${blankId}`;
             input.setAttribute('aria-label', `${section.title}第 ${number} 题第 ${blankIndex + 1} 空`);
             input.spellcheck = false;
             input.maxLength = 120;
