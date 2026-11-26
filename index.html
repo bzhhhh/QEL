@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1ea">
+  <title>qel 蛭变史期中检测卷（提高版）</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f1ea;
+      --sheet: #fffcf6;
+      --ink: #262e29;
+      --muted: #54635a;
+      --line: #d8dcd3;
+      --accent: #1b604d;
+      --light-green: #e5efe6;
+      --error: #99422c;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; line-height: 1.65; }
+    h1, h2, p { margin: 0; }
+    a, button, input { font: inherit; }
+    a { color: var(--accent); }
+    :focus-visible { outline: 3px solid #097d69; outline-offset: 3px; }
+    .wrap { width: min(1080px, calc(100% - 48px)); margin-inline: auto; }
+    .hero { padding: 55px 0 36px; }
+    .hero h1 { font-family: Georgia, "Songti SC", SimSun, serif; font-size: clamp(2rem, 5vw, 3.75rem); line-height: 1.17; }
+    .edition { display: inline-block; font-size: .52em; color: var(--accent); white-space: nowrap; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 14px 0 10px; color: var(--accent); font-weight: 650; }
+    .intro { max-width: 45em; color: var(--muted); }
+    .toolbar { position: sticky; top: 0; z-index: 2; background: var(--paper); border-block: 1px solid var(--line); }
+    .toolbar-inner { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .progress { width: min(320px, 48%); font-size: .88rem; font-weight: 650; }
+    progress { display: block; width: 100%; height: 8px; margin-top: 5px; accent-color: var(--accent); }
+    button {
+      min-height: 44px; padding: 7px 17px; color: #fff; background: var(--accent);
+      border: 1px solid var(--accent); border-radius: 7px; font-weight: 650; cursor: pointer;
+    }
+    button:hover { background: #144a3b; }
+    .secondary { background: var(--sheet); color: var(--accent); }
+    .secondary:hover { background: var(--light-green); }
+    .layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 36px; padding-block: 32px 50px; }
+    nav { position: sticky; top: 94px; align-self: start; }
+    nav a {
+      display: flex; justify-content: space-between; gap: 8px; align-items: center;
+      min-height: 45px; padding: 6px 8px; border-bottom: 1px solid var(--line); text-decoration: none;
+      font-size: .92rem;
+    }
+    nav a:hover { background: var(--light-green); }
+    nav small { color: var(--muted); white-space: nowrap; }
+    .section { margin-bottom: 32px; scroll-margin-top: 88px; }
+    .section-heading {
+      display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px;
+      border-top: 3px solid var(--accent); padding: 13px 0 12px;
+    }
+    .section-heading h2, #result h2 { font-size: 1.25rem; }
+    .section-heading p { color: var(--muted); font-size: .9rem; }
+    .question { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; padding: 18px; }
+    fieldset { margin: 0; min-inline-size: 0; padding: 0; border: 0; }
+    legend { padding: 0; }
+    legend, .prompt { font-weight: 650; overflow-wrap: anywhere; }
+    .prompt { white-space: pre-line; }
+    .options { display: grid; gap: 7px; margin-top: 12px; }
+    .options.binary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .option {
+      display: flex; align-items: baseline; gap: 9px; min-height: 44px;
+      padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer;
+    }
+    .option:has(input:checked) { background: var(--light-green); border-color: var(--accent); }
+    .option:has(input:disabled) { cursor: default; }
+    input[type="radio"] { accent-color: var(--accent); flex: none; margin: 0; }
+    input[type="text"] {
+      width: min(10em, 100%); min-height: 40px; margin: 3px 4px; padding: 4px 8px;
+      border: 1px solid #849b8e; border-radius: 5px; background: #fff; color: var(--ink);
+    }
+    input:disabled { opacity: 1; }
+    .feedback { margin-top: 10px; font-size: .95rem; color: var(--accent); overflow-wrap: anywhere; }
+    .feedback.incorrect { color: var(--error); }
+    #result {
+      margin-top: 24px; padding: 22px; border: 1px solid #b2cbbc; border-radius: 10px;
+      background: var(--light-green); scroll-margin-top: 84px;
+    }
+    #score { color: var(--accent); font: bold clamp(3rem, 9vw, 4.7rem)/1.1 Georgia, serif; }
+    .breakdown { display: flex; flex-wrap: wrap; gap: 5px 22px; padding: 0; margin: 12px 0 0; list-style: none; }
+    .bottom-actions { display: flex; justify-content: flex-end; }
+    dialog {
+      width: min(440px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 12px;
+      padding: 24px; background: var(--sheet); color: var(--ink);
+    }
+    dialog::backdrop { background: #17291dc0; }
+    dialog p { margin: 10px 0 18px; }
+    .dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 32px); }
+      .hero { padding: 30px 0 24px; }
+      .layout { display: block; padding-top: 16px; }
+      nav { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; margin-bottom: 24px; }
+      .question { padding: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero wrap">
+    <h1>qel 蛭变史期中检测卷 <span class="edition">提高版</span></h1>
+    <p class="meta"><span>34 道题</span><span>满分 100 分</span><span>建议用时 45 分钟</span></p>
+    <p class="intro">粉丝趣味自测，考考你对梗名、谐音和调侃的了解。填空按空计入作答进度，交卷后可以查看得分和参考答案。</p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner wrap">
+      <div class="progress">
+        <label for="progress" id="progress-label"></label>
+        <progress id="progress" value="0"></progress>
+      </div>
+      <button type="submit" form="exam" id="submit">交卷并评分</button>
+      <button type="button" class="secondary" id="reset" hidden>重新答题</button>
+    </div>
+  </div>
+  <main class="wrap">
+    <section id="result" aria-labelledby="result-title" tabindex="-1" hidden>
+      <h2 id="result-title">本次得分</h2>
+      <p><strong id="score"></strong> / 100 分</p>
+      <ul class="breakdown" id="breakdown"></ul>
+    </section>
+    <div class="layout">
+      <nav id="sections" aria-label="试卷题型"></nav>
+      <form id="exam" autocomplete="off">
+        <div id="questions"></div>
+        <div id="bottom-actions" class="bottom-actions">
+          <button type="submit">交卷并评分</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <dialog id="confirm-submit" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">还有题目未作答</h2>
+    <p id="unanswered"></p>
+    <form method="dialog" class="dialog-actions">
+      <button value="continue" class="secondary" autofocus>继续答题</button>
+      <button value="submit">确认交卷</button>
+    </form>
+  </dialog>
+  <noscript><p class="wrap">请启用 JavaScript 后重新打开试卷。</p></noscript>
+
+  <script type="application/json" id="exam-data">
+[
+  {"id": "choice", "title": "一、选择题", "points": 3, "unit": "每题", "questions": [
+    {"prompt": "“李信刻字”这个梗对应的是？", "options": ["诚c 一句宫斗开ob 报备时代，小老鼠火了开小游戏报备时代", "纯爷小辣条音，开播礼物不断，嘴上说着理性克制", "说话都给太子注意一点，小心全给你们ban 了", "竞走大赛快人一步"], "answer": "B"},
+    {"prompt": "“蛭禁诚”这个梗对应的是？", "options": ["诚c 一句宫斗开ob 报备时代，小老鼠火了开小游戏报备时代", "纯爷小辣条音，开播礼物不断", "野桃离明哥远点，不然被上贡给太子当贡桃", "晋级世界赛的三组被贬毫无姓名"], "answer": "A"},
+    {"prompt": "“闻蛭狱”这个梗对应的是？", "options": ["太子提前预告直播，内容被网友猜中", "直播间人数从7w 降到7k", "说话都给太子注意一点，小心全给你们ban 了", "三三串咚咚的跑步机台词"], "answer": "C"},
+    {"prompt": "“跑步机不能并排放”对应的台词是？", "options": ["我令令令申申申申审，跑步机不能并排放", "这份爱会不会，会不会让你感到疲惫", "那和我有什么关系", "见不见啊"], "answer": "A"},
+    {"prompt": "“会不会”是谁的著名BGM？", "options": ["皇儿", "三三", "诚c", "丘丘"], "answer": "B"},
+    {"prompt": "“最爱hpjy 之人”是什么场合获得的称号？", "options": ["训练赛登基", "竞燃之夜太子荣获", "塔罗牌测试", "小游戏惩罚"], "answer": "B"},
+    {"prompt": "“贡桃”这个梗指的是？", "options": ["野桃离你明哥远点，不然会被上贡给太子当贡桃", "青青丘丘合成大QQ", "太子和丘丘对上电视剧名字", "蓝图被换头像导致qc 被弃养"], "answer": "A"},
+    {"prompt": "“太子大赦天下”指的是？", "options": ["太子可以玩steam 小游戏", "你纯爷被允许开直播了", "队友坐旁边看太子玩游戏", "太子提前预告被猜中"], "answer": "B"},
+    {"prompt": "“无诏不得入京”调侃的是？", "options": ["皇儿收留无家可归的lgn", "成功晋级世界赛的三组被贬毫无姓名", "太子要求队友给他刷跑车", "三三只做了25 个俯卧撑"], "answer": "B"},
+    {"prompt": "“预蛭菜”这个梗指的是？", "options": ["太子提前预告直播，直播内容被网友猜测成功", "纯爷和好友直播玩steam 游戏", "太子嫔名不正言不顺", "直播间人数从7w 降到7k"], "answer": "A"},
+    {"prompt": "梗里说丘丘只能当“太子嫔”、不能封妃，最主要的原因是？", "options": ["比赛实力不够", "没ming（名）正言顺", "本人不愿意封妃", "入团年龄太小"], "answer": "B"},
+    {"prompt": "“报备尔”这个梗主要调侃的是？", "options": ["太子必须先报备才能玩steam 小游戏", "太子可以玩steam 小游戏，其他人要玩小游戏却全部要去报备", "其他人玩小游戏不用报备，只有太子需要报备", "所有人都不能玩steam 小游戏"], "answer": "B"},
+    {"prompt": "“皇家庇护所”里，皇儿收留无家可归的lgn 后，直播间人数发生了什么变化？", "options": ["从7w 降到7k", "从7k 涨到7w", "从700 涨到7000", "人数没有变化"], "answer": "A"},
+    {"prompt": "“33svan”惩罚做俯卧撑40 个，三三自告奋勇，最后只做了多少个就变成红牛了？", "options": ["40 个", "25 个", "35 个", "20 个"], "answer": "B"},
+    {"prompt": "“cdd 敢杀人！”这个梗来自什么方式测出的结果？", "options": ["比赛复盘", "塔罗牌测咚任", "直播投票", "群聊预言"], "answer": "B"}
+  ]},
+  {"id": "judge", "title": "二、判断题", "points": 2, "unit": "每题", "questions": [
+    {"prompt": "“李信刻字”：纯爷开播后礼物不断，一直说“理性，克制”，可惜是个小辣条音，说话不包准。", "answer": "T", "note": ""},
+    {"prompt": "诚c 一句宫斗开启了小游戏需报备时代，玩小老鼠火了又开启ob 需报备时代。", "answer": "F", "note": "顺序颠倒：宫斗开启ob 报备时代，小老鼠火了开启小游戏报备时代"},
+    {"prompt": "“孤寡老牛，冷宫疯牛，深山红牛，年后老牛”：三三远在另一个平台，顶着十秒延迟也要和他们连麦玩游戏，成功获得每一个惩罚。", "answer": "T", "note": ""},
+    {"prompt": "“对面是职业不怪你们”：rsg 复盘直播，dmls 说出这句话，无痕诡秘当场结巴破防。", "answer": "T", "note": ""},
+    {"prompt": "“e 国两蛭”：太子和太子嫔心结一样、为人处事也一样，会说“那和我有什么关系”“我又没叫人骂他”。", "answer": "T", "note": ""},
+    {"prompt": "“tec 魔仙堡”：三三小蓝图被pc 换成头像，从而导致qc 被弃养两次。", "answer": "T", "note": ""},
+    {"prompt": "皇儿本来12:00 要下播，收留无家可归的lgn 后，直播间人数从7k 涨到7w。", "answer": "F", "note": "人数从7w 降到7k"},
+    {"prompt": "“青丘糊传说”：这个梗说的是太子和皇儿正好和电视剧对上了名字。", "answer": "F", "note": "是太子和丘丘，不是太子和皇儿"},
+    {"prompt": "“丘吉尔”是丘丘和太子青贝尔的CP 名，又称“铁幕演说之人”。", "answer": "T", "note": ""},
+    {"prompt": "“太子伴读”指两个队友坐太子旁边看他玩游戏。", "answer": "T", "note": ""}
+  ]},
+  {"id": "fill", "title": "三、填空题", "points": 2, "unit": "每空", "questions": [
+    {"parts": ["qel 竞走大赛：快人百步是", "；慢人十步是", "；快人一步是", "；快人两步是", "。"], "blanks": [["suk"], ["remember"], ["bxc"], ["ming"]]},
+    {"parts": ["“太子登基”：训练赛day3 开场", "，太子专门做", "。"], "blanks": [["金色雨"], ["妆造"]]},
+    {"parts": ["“脚蹬子合成自行车”：太子嫔拿", "当脚蹬子，太子拿", "当脚蹬子，两个脚蹬子合成自行车开起来了。"], "blanks": [["33"], ["小纯"]]},
+    {"parts": ["“青青类包”：tb 那么捧太子，疑似因为ch 的白月光是", "，“他叫贝因斯坦而你又叫小", "”。"], "blanks": [["包贝尔"], ["爱因斯坦", "小爱因斯坦"]]},
+    {"parts": ["“太子嫔”：丘丘投诚，但没", "正言顺，所以只能当嫔。"], "blanks": [["ming", "名"]]},
+    {"parts": ["“绿毛鸡”：青＝绿毛，稚＝", "＝鸡，绿毛鸡有感觉吗。"], "blanks": [["雉"]]},
+    {"parts": ["“青丘糊传说”：太子和", "正好和电视剧《青丘狐传说》对上了名字。"], "blanks": [["丘丘"]]},
+    {"parts": ["“给我刷个跑车”：太子庆功宴要求队友给他刷", "。"], "blanks": [["跑车"]]}
+  ]},
+  {"id": "final", "title": "四、压轴材料分析", "points": 7, "unit": "本题", "questions": [
+    {"parts": ["阅读下面的直播对话片段，完成作答。\n材料：直播间里有人问了一句——“对了？”\n问题：按照这个梗的固定回答，横线处应填什么？请写在下面横线上。\n对了？　答：", ""], "blanks": [["不打"]]}
+  ]}
+]
+  </script>
+  <script>
+    const exam = document.querySelector('#exam');
+    const sections = JSON.parse(document.querySelector('#exam-data').textContent);
+    const questionList = document.querySelector('#questions');
+    const sectionLinks = document.querySelector('#sections');
+    const result = document.querySelector('#result');
+    const breakdown = document.querySelector('#breakdown');
+    const progress = document.querySelector('#progress');
+    const progressLabel = document.querySelector('#progress-label');
+    const submitButton = document.querySelector('#submit');
+    const resetButton = document.querySelector('#reset');
+    const confirmSubmit = document.querySelector('#confirm-submit');
+    const bottomActions = document.querySelector('#bottom-actions');
+    const storageKey = 'qel-midterm-advanced-v1';
+    const judgeOptions = { T: '√ 正确', F: '× 错误' };
+    const answerGroups = [];
+    let submitted = false;
+
+    function element(tag, content = '', className = '') {
+      const node = document.createElement(tag);
+      node.textContent = content;
+      node.className = className;
+      return node;
+    }
+
+    for (const section of sections) {
+      const sectionNode = element('section', '', 'section');
+      sectionNode.id = section.id;
+      const maxPoints = section.questions.reduce((sum, q) => sum + (q.blanks?.length ?? 1) * section.points, 0);
+      const heading = element('div', '', 'section-heading');
+      heading.append(element('h2', section.title), element('p', `${section.unit} ${section.points} 分 · 共 ${maxPoints} 分`));
+      sectionNode.append(heading);
+      const link = element('a', section.title);
+      link.href = '#' + section.id;
+      link.append(element('small', `${maxPoints} 分`));
+      sectionLinks.append(link);
+      questionList.append(sectionNode);
+      section.maxPoints = maxPoints;
+
+      section.questions.forEach((question, index) => {
+        const number = index + 1;
+        const id = `${section.id}-${number}`;
+        const card = element('div', '', 'question');
+        const group = { section, question, units: [], card };
+        answerGroups.push(group);
+        sectionNode.append(card);
+
+        if (question.blanks) {
+          const prompt = element('p', section.id === 'final' ? question.parts[0] : `${number}. ${question.parts[0]}`, 'prompt');
+          question.blanks.forEach((accepted, blankIndex) => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `${id}-${blankIndex + 1}`;
+            input.setAttribute('aria-label', `${section.title}第 ${number} 题第 ${blankIndex + 1} 空`);
+            input.spellcheck = false;
+            input.maxLength = 120;
+            prompt.append(input, question.parts[blankIndex + 1]);
+            group.units.push({ name: input.name, controls: [input], accepted, reference: accepted.join(' / ') });
+          });
+          card.append(prompt);
+        } else {
+          const fieldset = document.createElement('fieldset');
+          fieldset.append(element('legend', `${number}. ${question.prompt}`));
+          const options = element('div', '', question.options ? 'options' : 'options binary');
+          const labels = question.options
+            ? Object.fromEntries(question.options.map((option, i) => ['ABCD'[i], `${'ABCD'[i]}. ${option}`]))
+            : judgeOptions;
+          const controls = [];
+          for (const [value, label] of Object.entries(labels)) {
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = id;
+            input.value = value;
+            const option = element('label', '', 'option');
+            option.append(input, element('span', label));
+            options.append(option);
+            controls.push(input);
+          }
+          group.units.push({ name: id, controls, accepted: [question.answer], reference: labels[question.answer] });
+          fieldset.append(options);
+          card.append(fieldset);
+        }
+      });
+    }
+
+    const units = answerGroups.flatMap(group => group.units);
+    progress.max = units.length;
+
+    function normalize(value) {
+      return value.normalize('NFKC').toLowerCase().replace(/[\p{White_Space}\p{Punctuation}]/gu, '');
+    }
+
+    function updateProgress() {
+      const answers = new FormData(exam);
+      const count = units.filter(unit => String(answers.get(unit.name) ?? '').trim()).length;
+      progress.value = count;
+      progressLabel.textContent = `已作答 ${count} / ${units.length}`;
+      return count;
+    }
+
+    function saveAttempt() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ answers: Object.fromEntries(new FormData(exam)), submitted }));
+      } catch {
+        // The exam works even if the browser blocks local storage.
+      }
+    }
+
+    function finishAttempt(focusResult = true) {
+      const answers = new FormData(exam);
+      const totals = new Map(sections.map(section => [section.id, 0]));
+      let score = 0;
+
+      for (const { section, question, units, card } of answerGroups) {
+        units.forEach((unit, index) => {
+          const response = String(answers.get(unit.name) ?? '').trim();
+          const answer = normalize(response);
+          const correct = unit.accepted.some(value => normalize(value) === answer);
+          const points = correct ? section.points : 0;
+          const label = units.length > 1 ? `第 ${index + 1} 空 · ` : '';
+          const status = correct ? '正确' : response ? '答错' : '未作答';
+          const reference = correct ? '' : ` · 参考答案 ${unit.reference}`;
+          card.append(element('p', `${label}${status} · ${points} / ${section.points} 分${reference}`, correct ? 'feedback' : 'feedback incorrect'));
+          unit.controls.forEach(control => { control.disabled = true; });
+          totals.set(section.id, totals.get(section.id) + points);
+          score += points;
+        });
+        if (question.note) card.append(element('p', question.note, 'feedback'));
+      }
+
+      document.querySelector('#score').textContent = score;
+      breakdown.replaceChildren(...sections.map(section =>
+        element('li', `${section.title.split('、')[1]} ${totals.get(section.id)} / ${section.maxPoints} 分`)
+      ));
+      result.hidden = false;
+      submitButton.hidden = true;
+      bottomActions.hidden = true;
+      resetButton.hidden = false;
+      if (focusResult) {
+        result.focus({ preventScroll: true });
+        result.scrollIntoView({ block: 'start' });
+      }
+    }
+
+    function submitAttempt() {
+      submitted = true;
+      saveAttempt();
+      finishAttempt();
+    }
+
+    exam.addEventListener('input', () => {
+      updateProgress();
+      saveAttempt();
+    });
+
+    exam.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && !event.isComposing && event.target.matches('input[type="text"]')) {
+        event.preventDefault();
+      }
+    });
+
+    exam.addEventListener('submit', event => {
+      event.preventDefault();
+      if (submitted) return;
+      const remaining = units.length - updateProgress();
+      if (remaining === 0) {
+        submitAttempt();
+      } else {
+        document.querySelector('#unanswered').textContent = `还有 ${remaining} 项未作答，空着的题目或填空计 0 分。`;
+        confirmSubmit.returnValue = '';
+        confirmSubmit.showModal();
+      }
+    });
+
+    confirmSubmit.addEventListener('close', () => {
+      if (confirmSubmit.returnValue === 'submit') submitAttempt();
+    });
+
+    resetButton.addEventListener('click', () => {
+      if (!window.confirm('清除本次答题和得分，重新开始？')) return;
+      exam.reset();
+      units.forEach(unit => unit.controls.forEach(control => { control.disabled = false; }));
+      questionList.querySelectorAll('.feedback').forEach(node => node.remove());
+      submitted = false;
+      updateProgress();
+      saveAttempt();
+      result.hidden = true;
+      submitButton.hidden = false;
+      bottomActions.hidden = false;
+      resetButton.hidden = true;
+      submitButton.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+    });
+
+    try {
+      const attempt = JSON.parse(localStorage.getItem(storageKey));
+      if (attempt?.answers) {
+        for (const unit of units) {
+          const answer = attempt.answers[unit.name];
+          if (typeof answer !== 'string') continue;
+          for (const control of unit.controls) {
+            if (control.type === 'radio') control.checked = control.value === answer;
+            else control.value = answer;
+          }
+        }
+        submitted = attempt.submitted === true;
+      }
+    } catch {
+      // An unavailable or invalid draft can be ignored.
+    }
+    updateProgress();
+    if (submitted) finishAttempt(false);
+  </script>
+</body>
+</html>
